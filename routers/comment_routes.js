@@ -1,10 +1,18 @@
-const express = require("express");
-const router = express.Router();
+// const express = require("express");
+// const router = express.Router();
+// const {
+//   createComment,
+//   getCommentByPostId,
+//   updateComment,
+//   deleteComment,
+// } = require( "../Services/commentService")
 
-router.get("/", (req, res) => res.send("Not implemented yet"));
-router.post("/", (req, res) => res.send("Not implemented yet"));
-router.get("/:id", (req, res) => res.send("Not implemented yet"));
-router.put("/:id", (req, res) => res.send("Not implemented yet"));
-router.delete("/:id", (req, res) => res.send("Not implemented yet"));
+// router.post("/", (req, res) => createComment(req, res));
 
-module.exports = router;
+// router.get("/post/:postId", (req, res) => getCommentByPostId(req, res));
+
+// router.put("/:commentId", (req, res) => updateComment(req, res));
+
+// router.delete("/:commentId", (req, res) => deleteComment(req, res));
+
+// module.exports = router;

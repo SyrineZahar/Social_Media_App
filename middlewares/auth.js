@@ -6,43 +6,25 @@ function generateAccessToken(username, role) {
     return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: '1h' });
 }
 
-function protect(req, res, next) {
-    // const { username, mdp } = req.headers;
 
-    // if (!username || !mdp) {
-    //     return res.status(400).json({ success: false, message: "Username and password needed" });
-    // }
+function verifyToken(req, res, next) {
 
-    // try {
-    //     const user = await User.findOne({ username });
-    //     if (!user) {
-    //         return res.status(404).json({ success: false, message: "User not found" });
-    //     }
+    if (!req.headers.authorization) {
+        return res.status(302).json({ success: false, message: "No authorization header" });
+    }
 
-    //     const isMatch = await compare(mdp, user.password);
-    //     if (!isMatch) {
-    //         return res.status(401).json({ success: false, message: "Wrong password" });
-    //     }
+    const token = req.headers.authorization.replace("Bearer", "").trim();
 
-        if (!req.headers.authorization) {
-            return res.status(302).json({ success: false, message: "No authorization header" });
-        }
+    try {
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+        console.log(`Decoded token:`, decoded); 
 
-        const token = req.headers.authorization.replace("Bearer", "").trim();
-
-        try {
-            const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-            console.log(`Decoded token:`, decoded); 
-
-            const { username, role } = decoded;
-            req.user = { username, role };
-            next();
-        } catch (err) {
-            res.status(401).json({ success: false, message: "Invalid token" });
-        }
-    // } catch (err) {
-    //     res.status(500).json({ success: false, message: "Error while logging in" });
-    // }
+        const { username, role } = decoded;
+        req.user = { username, role };
+        next();
+    } catch (err) {
+        res.status(401).json({ success: false, message: "Invalid token" });
+    }
 }
 
-module.exports = { generateAccessToken, protect };
+module.exports = {verifyToken, generateAccessToken};
