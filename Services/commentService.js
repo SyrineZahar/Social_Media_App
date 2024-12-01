@@ -1,104 +1,103 @@
-// const express = require("express");
+const Post = require("../models/Post");
+const Comment = require("../models/Comment");
 
-// const router = express.Router();
+async function createComment(req, res) {
+  try {
+    const { description, postId } = req.body;
 
-// // Create a comment
-// router.post("/", async (req, res) => {
-//   try {
-//     const { description, postId } = req.body;
+    if (!description || !postId) {
+      return res
+        .status(400)
+        .json({ message: "Description and Post ID are required" });
+    }
 
-//     // Validate the input
-//     if (!description || !postId) {
-//       return res.status(400).json({ message: "Description and Post ID are required" });
-//     }
+    const newComment = new Comment({
+      description,
+      UserId: req.user._id,
+      PostId: postId,
+    });
 
-//     // Find the post to ensure it exists
-//     const post = await Post.findById(postId);
-//     if (!post) {
-//       return res.status(404).json({ message: "Post not found" });
-//     }
+    await newComment.save();
+    return res.status(201).json(newComment);
+  } catch (err) {
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message, 
+    });
+  }
+}
 
-//     // Create a new comment
-//     const newComment = new Comment({
-//       description,
-//       UserId: req.user._id, // Assuming user info is attached to the request (e.g., by a JWT middleware)
-//       PostId: postId,
-//     });
+async function getCommentsByPost(req, res) {
+  try {
+    const { postId } = req.params;
 
-//     // Save the comment
-//     await newComment.save();
-//     return res.status(201).json(newComment); // Respond with the created comment
-//   } catch (err) {
-//     return res.status(500).json({ message: "Server error", error: err });
-//   }
-// });
+    const comments = await Comment.find({ PostId: postId }).populate(
+      "UserId",
+      "username email"
+    );
+    if (!comments || comments.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No comments found for this post" });
+    }
 
-// // Get comments by Post ID
-// router.get("/post/:postId", async (req, res) => {
-//   try {
-//     const { postId } = req.params;
+    return res.status(200).json(comments);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: err });
+  }
+}
 
-//     // Find the comments for the specified post
-//     const comments = await Comment.find({ PostId: postId }).populate("UserId", "username email");
-//     if (!comments || comments.length === 0) {
-//       return res.status(404).json({ message: "No comments found for this post" });
-//     }
+async function updateComment(req, res) {
+  try {
+    const { commentId } = req.params;
+    const { description } = req.body;
 
-//     return res.status(200).json(comments); // Respond with the comments found
-//   } catch (err) {
-//     return res.status(500).json({ message: "Server error", error: err });
-//   }
-// });
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
 
-// // Update a comment (only the creator can update)
-// router.put("/:commentId", async (req, res) => {
-//   try {
-//     const { commentId } = req.params;
-//     const { description } = req.body;
+    if (comment.UserId.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this comment" });
+    }
 
-//     // Find the comment to update
-//     const comment = await Comment.findById(commentId);
-//     if (!comment) {
-//       return res.status(404).json({ message: "Comment not found" });
-//     }
+    comment.description = description || comment.description;
+    await comment.save();
 
-//     // Check if the current user is the creator of the comment
-//     if (comment.UserId.toString() !== req.user._id.toString()) {
-//       return res.status(403).json({ message: "You are not authorized to update this comment" });
-//     }
+    return res.status(200).json(comment);
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: err });
+  }
+}
 
-//     // Update the comment
-//     comment.description = description || comment.description;  // Only update if description is provided
-//     await comment.save();
+async function deleteComment(req, res) {
+  try {
+    const { commentId } = req.params;
 
-//     return res.status(200).json(comment); // Respond with the updated comment
-//   } catch (err) {
-//     return res.status(500).json({ message: "Server error", error: err });
-//   }
-// });
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
 
-// // Delete a comment (only the creator can delete)
-// router.delete("/:commentId", async (req, res) => {
-//   try {
-//     const { commentId } = req.params;
+    if (comment.UserId.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this comment" });
+    }
 
-//     // Find the comment to delete
-//     const comment = await Comment.findById(commentId);
-//     if (!comment) {
-//       return res.status(404).json({ message: "Comment not found" });
-//     }
+    await comment.remove();
 
-//     // Check if the current user is the creator of the comment
-//     if (comment.UserId.toString() !== req.user._id.toString()) {
-//       return res.status(403).json({ message: "You are not authorized to delete this comment" });
-//     }
+    return res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: err });
+  }
+}
 
-//     // Delete the comment
-//     await comment.remove();
-
-//     return res.status(200).json({ message: "Comment deleted successfully" }); // Respond with success message
-//   } catch (err) {
-//     return res.status(500).json({ message: "Server error", error: err });
-//   }
-// });
-
+module.exports = {
+  createComment,
+  getCommentsByPost,
+  updateComment,
+  deleteComment,
+};

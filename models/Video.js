@@ -1,17 +1,17 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
+const BaseRessource = require("./Ressource");
 
-const Video = new Schema(
-  {
-    date : { type : Date, required : true},
-    videoSize: {type: Number, required: true},
-    VideoType: {type:String},
-    PostId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post"
-    }
+const videoSchema = new Schema({
+  duration: {
+    type: Number,
+    required: true,
   },
-  { strict: 'throw' }
-);
+  videoUrl: {
+    type: String,
+    required: true,
+  },
+});
 
-module.exports = mongoose.model("Video", Video);
+const Video = BaseRessource.discriminator("Video", videoSchema);
+module.exports = Video;

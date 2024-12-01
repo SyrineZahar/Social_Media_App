@@ -8,6 +8,7 @@ const commentsRoutes = require("./routers/comment_routes");
 const validateRoutes = require("./routers/validation_routes");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const path = require('path');
 
 dotenv.config();
 app.use(express.json());
@@ -21,9 +22,13 @@ mongoose
   .catch((err) => console.error("Erreur de connexion à MongoDB :", err));
 
 app.use("/user", userRoutes);
-app.use("/publication", publicationRoutes);
+app.use("/posts", publicationRoutes);
 // app.use("/comment", commentsRoutes);
-app.use("/validate", validateRoutes);
+// app.use("/validate", validateRoutes);
+
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

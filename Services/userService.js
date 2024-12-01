@@ -1,28 +1,35 @@
 const bcrypt = require("bcrypt");
-const { User } = require("../models/User");
+const BaseUser = require("../models/Person"); 
+const Manager = require("../models/Manager");
+const User = require("../models/User");
 
 const createUser = async (req, res) => {
-  console.log(User); // It should log the Mongoose model object, not 'undefined'
-
   try {
-    const { username, email, password, role, image } = req.body;
+    const { email, firstName, lastName, password, phone, userType, biography } = req.body;
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await BaseUser.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: "Your email is already in use" });
+      return res.status(400).json({ error: "Email is already in use" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-      role,
-      image,
-      Date: new Date(),
-    });
+    let newUser;
+    if (userType == 'user') {
+      newUser = new User({
+        email,
+        firstName,
+        lastName,
+        password: hashedPassword,
+        phone,
+        biography,
+      });
+    }
+    else {
+      return res.status(400).json({ error: "Invalid userType" });
+    }
 
+    await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({
@@ -33,20 +40,22 @@ const createUser = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({
-      error: "Error occurred while fetching users",
-      details: error.message,
-    });
-  }
+    try {
+      const managers = await BaseUser.find({ userType: "User" });
+      res.status(200).json(managers);
+    } catch (error) {
+      res.status(500).json({
+        error: "Error occurred while fetching managers",
+        details: error.message,
+      });
+    }
 };
+
+
 
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id);
+    const user = await BaseUser.findById(req.params.id);
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -67,17 +76,13 @@ const updateUser = async (req, res) => {
       req.body.password = await bcrypt.hash(req.body.password, 10);
     }
 
-    const updated = await User.update(req.body, {
-      where: { id: req.params.id },
-    });
+    const updatedUser = await BaseUser.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-    if (updated[0] === 0) {
-      return res
-        .status(404)
-        .json({ error: "User not found or no changes made" });
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found or no changes made" });
     }
 
-    res.status(200).json({ message: "User updated successfully" });
+    res.status(200).json({ message: "User updated successfully", updatedUser });
   } catch (error) {
     res.status(500).json({
       error: "Error occurred while updating the user",
@@ -88,9 +93,9 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const deleted = await User.destroy({ where: { id: req.params.id } });
+    const deletedUser = await BaseUser.findByIdAndDelete(req.params.id);
 
-    if (!deleted) {
+    if (!deletedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 

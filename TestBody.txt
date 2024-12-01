@@ -1,0 +1,13 @@
+add user
+{
+    "email": "manager@example.com",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "password": "password123",
+    "phone": "987-654-3210",
+    "userType": "manager",
+    "bankAccount": "1234567890123456"
+  }
+
+
+    

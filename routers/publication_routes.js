@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { createPost, getAllPosts, getPostById, updatePost, deletePost } = require("../Services/PostService")
+const upload = require('../middlewares/multer'); 
+const { createPost } = require("../Services/PostService")
 
-router.post("/", (req, res) => createPost(req, res));
+router.post('/', upload.fields([{ name: 'images' }, { name: 'videos' }]), createPost);
 
 router.get("/", (req, res) => getAllPosts(req, res));
 

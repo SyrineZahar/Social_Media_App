@@ -1,22 +1,17 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
+const BaseRessource = require("./Ressource");
 
-const Image = new Schema(
-  {
-    date: {
-      type: Date,
-      required: true,
-    },
-    ImageSize: {
-      type: Number,
-      required: true,
-    },
-    PostId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-    },
+const imageSchema = new Schema({
+  resolution: {
+    type: String,
+    required: true,
   },
-  { strict: "throw" }
-);
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+});
 
-module.exports = mongoose.model("Image", Image);
+const Image = BaseRessource.discriminator("Image", imageSchema);
+module.exports = Image;
