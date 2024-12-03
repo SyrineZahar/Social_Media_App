@@ -2,8 +2,8 @@ const express = require("express");
 const { verifyToken } = require("../middlewares/auth");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
-const { login, logout } = require("../Services/authService");
-const { createUser, getAllUsers,getUserById, updateUser, deleteUser } = require("../Services/userService");
+const { login, logout } = require("../Controller/authController");
+const { createUser, getAllUsers,getUserById, updateUser, deleteUser } = require("../Controller/userController");
 
 router.post("/login", login);
 

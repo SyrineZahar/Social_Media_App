@@ -6,7 +6,7 @@ const {
   createLike,
   getLikesByPost,
   deleteLike,
-} = require("../Services/likeService");
+} = require("../Controller/likeController");
 router.post("/", protect, createLike);
 
 router.get("/:postId", getLikesByPost);

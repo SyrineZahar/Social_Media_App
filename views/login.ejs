@@ -83,7 +83,6 @@
   <div class="login-container">
     <h2>Admin Login</h2>
 
-    <!-- Login Form -->
     <form action="/user/login" method="POST">
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
@@ -95,19 +94,16 @@
         <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
       </div>
 
-      <!-- Error Message Display -->
       <% if (typeof errorMessage !== 'undefined') { %>
         <div class="text-danger text-center mt-4">
             <p><%= errorMessage %></p>
         </div>
       <% } %>
 
-      <!-- Submit Button -->
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
   </div>
 
-  <!-- Bootstrap Icons CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.js"></script>
 </body>
 </html>

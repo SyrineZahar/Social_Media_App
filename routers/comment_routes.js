@@ -9,7 +9,7 @@ const {
   getCommentsByPost,
   updateComment,
   deleteComment,
-} = require("../Services/commentService");
+} = require("../Controller/commentController");
 
 router.post("/", protect, createComment);
 router.get("/:postId", getCommentsByPost);

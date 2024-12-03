@@ -6,7 +6,7 @@ const {
   deletePost,
   editPost,
   acceptPost,
-} = require("../Services/PostServiceNew");
+} = require("../Controller/PostController");
 const { isAdmin } = require("../middlewares/auth");
 const upload = require("../middlewares/multer");
 const {protect} = require("../middlewares/auth");

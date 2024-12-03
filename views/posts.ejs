@@ -79,7 +79,6 @@
   </style>
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Validate Posts</a>
@@ -87,23 +86,19 @@
     </div>
   </nav>
 
-  <!-- Feed Container -->
   <div class="container feed-container">
     <div class="row">
       <% if (posts.length > 0) { %>
         <% posts.forEach(post => { %>
           <div class="col-md-4">
             <div class="post-card">
-              <!-- Render Description -->
               <div class="post-body">
                 <p><%= post.Description %></p>
 
-                <!-- Render Posted By -->
                 <p><strong>Posted by:</strong> 
                   <%= post.UserId ? `${post.UserId.firstName} ${post.UserId.lastName}` : "Unknown User" %>
                 </p>
 
-                <!-- Render Media -->
                 <% if (post.ressources && post.ressources.length > 0) { %>
                   <% post.ressources.forEach(resource => { %>
                     <% if (resource.ressourceType === "Image") { %>
@@ -118,7 +113,6 @@
                 <% } %>
               </div>
 
-              <!-- Buttons for Accept and Reject -->
               <div class="d-flex justify-content-between p-3">
                 <button class="btn btn-success" onclick="acceptPost('<%= post._id %>')">Accept</button>
                 <button class="btn btn-danger" onclick="rejectPost('<%= post._id %>')">Reject</button>

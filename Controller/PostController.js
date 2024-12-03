@@ -5,6 +5,10 @@ const Video = require("../models/Video");
 const path = require("path");
 const Comment = require("../models/Comment"); 
 const Like = require("../models/Like");
+const { handleDeletePost } = require("../Service/postService");
+
+
+
 
 async function createPost(req, res) {
   try {
@@ -117,26 +121,15 @@ async function editPost(req, res) {
 }
 
 async function deletePost(req, res) {
+  const postId = req.params.id;
+
   try {
-    const postId = req.params.id;
-
-
-    const deletedComments = await Comment.deleteMany({ postId });
-
-    const deletedLikes = await Like.deleteMany({ postId });
-
-    const post = await Post.findByIdAndDelete(postId);
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-
-    res.status(200).json({ message: "Post deleted successfully" });
+    const result = await handleDeletePost(postId); // Correct function name
+    res.status(200).json(result);
   } catch (err) {
-    console.error("Error deleting post:", err);
     res.status(500).json({ error: "Failed to delete post", details: err.message });
   }
 }
-
 
 
 module.exports = { createPost, getAllPosts, deletePost, editPost, acceptPost };
