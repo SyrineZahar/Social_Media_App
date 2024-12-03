@@ -1,35 +1,32 @@
-const multer = require("multer");
-const path = require("path");
+const path = require('path');
+const multer = require('multer');
 
-// Configure storage for images and videos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Create directories for images and videos if not already there
-    const fileType = file.mimetype.startsWith("image/") ? "images" : "videos";
-    cb(null, `uploads/${fileType}`);
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); 
   },
-  filename: (req, file, cb) => {
-    // Save the file with the original name
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-// Multer file filter for validating file type (image/video)
-const fileFilter = (req, file, cb) => {
-  const allowedImageTypes = ["image/jpeg", "image/png", "image/gif"];
-  const allowedVideoTypes = ["video/mp4", "video/avi"];
-  
-  if (file.mimetype.startsWith("image/") && allowedImageTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else if (file.mimetype.startsWith("video/") && allowedVideoTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only images and videos are allowed."), false);
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname); 
+    cb(null, Date.now() + ext);
   }
-};
-
-// Initialize Multer
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
 });
+
+var upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, callback) {
+    const allowedImageTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+    const allowedVideoTypes = ['video/mp4', 'video/avi', 'video/x-matroska'];
+
+    if (allowedImageTypes.includes(file.mimetype) || allowedVideoTypes.includes(file.mimetype)) {
+      callback(null, true);
+    } else {
+      console.log("Only PNG, JPG, JPEG, MP4, AVI, MKV files are supported");
+      callback(null, false); 
+    }
+  },
+  limits: {
+    fileSize: 1024 * 1024 * 10 
+  }
+});
+
+module.exports = upload;

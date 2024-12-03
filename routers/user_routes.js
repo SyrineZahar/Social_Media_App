@@ -2,10 +2,12 @@ const express = require("express");
 const { verifyToken } = require("../middlewares/auth");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
-const { login } = require("../Services/authService");
+const { login, logout } = require("../Services/authService");
 const { createUser, getAllUsers,getUserById, updateUser, deleteUser } = require("../Services/userService");
 
 router.post("/login", login);
+
+router.post("/logout", logout);
 
 router.get("/profile", verifyToken, (req, res) => {
   res.json({ user: req.user });

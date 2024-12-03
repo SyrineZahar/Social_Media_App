@@ -5,16 +5,19 @@ const dotenv = require("dotenv");
 const userRoutes = require("./routers/user_routes");
 const publicationRoutes = require("./routers/publication_routes");
 const commentsRoutes = require("./routers/comment_routes");
-const validateRoutes = require("./routers/validation_routes");
+const likeRoutes = require("./routers/like_routes");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
-const path = require('path');
+const path = require("path");
 
 dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("uploads"));
+app.set("view engine", "ejs");
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/SocialMedia")
@@ -23,11 +26,13 @@ mongoose
 
 app.use("/user", userRoutes);
 app.use("/posts", publicationRoutes);
-// app.use("/comment", commentsRoutes);
-// app.use("/validate", validateRoutes);
+app.use("/comments", commentsRoutes);
+app.use("/like", likeRoutes);
 
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.get("/login", (req, res) => {
+  res.render("login");
+});
 
 
 app.listen(port, () => {

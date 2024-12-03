@@ -1,16 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const upload = require('../middlewares/multer'); 
-const { createPost } = require("../Services/PostService")
+const {
+  createPost,
+  getAllPosts,
+  deletePost,
+  editPost,
+  acceptPost,
+} = require("../Services/PostServiceNew");
+const { isAdmin } = require("../middlewares/auth");
+const upload = require("../middlewares/multer");
+const {protect} = require("../middlewares/auth");
 
-router.post('/', upload.fields([{ name: 'images' }, { name: 'videos' }]), createPost);
+router.post("/", upload.single("image"),protect, createPost);
 
-router.get("/", (req, res) => getAllPosts(req, res));
+router.get("/", isAdmin, getAllPosts);
 
-router.get("/:id", (req, res) => getPostById(req, res));
+router.put("/:id", editPost);
 
-router.put("/:id", (req, res) => updatePost(req, res));
+router.delete("/:id", deletePost);
 
-router.delete("/:id", (req, res) => deletePost(req, res));
+router.post("/accept/:id", acceptPost);
 
 module.exports = router;

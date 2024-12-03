@@ -5,11 +5,14 @@ const BaseRessourceSchema = new Schema(
   {
     Size: {
       type: String,
-      required: true,
     },
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    Url: {
+      type: String,
+      required: true,
     },
   },
   { discriminatorKey: "ressourceType", timestamps: true }

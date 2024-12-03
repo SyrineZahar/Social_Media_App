@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook-Like Feed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f0f2f5;
+    }
+    /* Navbar Style */
+    .navbar {
+      margin-bottom: 20px;
+    }
+
+    /* Feed Container */
+    .feed-container {
+      max-width: 1200px; /* Increased max-width for wider feed */
+      margin: 0 auto;
+      padding: 20px 15px;
+    }
+
+    /* Post Card Style */
+    .post-card {
+      background: #fff;
+      border: none;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      height: 100%; /* Ensure post takes full available height */
+    }
+
+    .post-body {
+      font-size: 1.2rem;
+      color: #333;
+      padding: 20px;
+      flex-grow: 1; /* Allow body to take remaining space */
+    }
+
+    .post-body img, 
+    .post-body video {
+      width: 100%;
+      height: auto;
+      border-radius: 0;
+    }
+
+    .post-body video {
+      margin-top: 10px;
+    }
+
+    /* Post Cards Container (flexbox for equal height columns) */
+    .row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .col-md-4 {
+      flex: 1 1 30%; /* Makes the columns responsive with equal width */
+      max-width: 32%; /* Ensures posts are of equal width */
+    }
+
+    /* Style for logout button */
+    .logout-btn {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .logout-btn:hover {
+      background-color: #e60000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Validate Posts</a>
+      <button class="btn logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Feed Container -->
+  <div class="container feed-container">
+    <div class="row">
+      <% if (posts.length > 0) { %>
+        <% posts.forEach(post => { %>
+          <div class="col-md-4">
+            <div class="post-card">
+              <!-- Render Description -->
+              <div class="post-body">
+                <p><%= post.Description %></p>
+
+                <!-- Render Posted By -->
+                <p><strong>Posted by:</strong> 
+                  <%= post.UserId ? `${post.UserId.firstName} ${post.UserId.lastName}` : "Unknown User" %>
+                </p>
+
+                <!-- Render Media -->
+                <% if (post.ressources && post.ressources.length > 0) { %>
+                  <% post.ressources.forEach(resource => { %>
+                    <% if (resource.ressourceType === "Image") { %>
+                      <img src="<%= resource.Url %>" alt="Image">
+                    <% } else if (resource.ressourceType === "Video") { %>
+                      <video controls>
+                        <source src="<%= resource.Url %>" type="video/mp4">
+                        Your browser does not support the video tag.
+                      </video>
+                    <% } %>
+                  <% }); %>
+                <% } %>
+              </div>
+
+              <!-- Buttons for Accept and Reject -->
+              <div class="d-flex justify-content-between p-3">
+                <button class="btn btn-success" onclick="acceptPost('<%= post._id %>')">Accept</button>
+                <button class="btn btn-danger" onclick="rejectPost('<%= post._id %>')">Reject</button>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p class="text-center">No posts available.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    function acceptPost(postId) {
+      fetch(`/posts/accept/${postId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            location.reload();
+          } else {
+            alert("Error: " + data.error);
+          }
+        });
+    }
+
+    function rejectPost(postId) {
+      fetch(`/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            location.reload();
+          } else {
+            alert("Error: " + data.error);
+          }
+        });
+    }
+
+    function logout() {
+      fetch('/user/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            window.location.href = '/login'; 
+          } else {
+            alert("Error: " + data.error);
+          }
+        });
+    }
+  </script>
+</body>
+</html>
