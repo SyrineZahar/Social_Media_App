@@ -9,7 +9,7 @@ const {
 } = require("../Controller/likeController");
 router.post("/", protect, createLike);
 
-router.get("/:postId", getLikesByPost);
+router.get("/:postId",protect, getLikesByPost);
 
 router.delete("/:postId", protect, deleteLike);
 

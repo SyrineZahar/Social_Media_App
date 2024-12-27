@@ -5,6 +5,7 @@ const {
   getAllPosts,
   deletePost,
   editPost,
+  getAllPostsUsers,
   acceptPost,
 } = require("../Controller/PostController");
 const { isAdmin } = require("../middlewares/auth");
@@ -13,12 +14,14 @@ const {protect} = require("../middlewares/auth");
 
 router.post("/", upload.single("image"),protect, createPost);
 
-router.get("/", isAdmin, getAllPosts);
+router.get("/", isAdmin, protect,  getAllPosts);
 
-router.put("/:id", editPost);
+router.get("/postUsers",  protect,  getAllPostsUsers);
 
-router.delete("/:id", deletePost);
+router.put("/:id", protect,  editPost);
 
-router.post("/accept/:id", acceptPost);
+router.delete("/:id", protect,  deletePost);
+
+router.post("/accept/:id", protect, acceptPost);
 
 module.exports = router;

@@ -79,6 +79,32 @@ async function getAllPosts(req, res) {
   }
 }
 
+
+async function getAllPostsUsers(req, res) {
+  try {
+    const posts = await Post.find({ validate: true })
+    .populate({
+      path: "UserId", 
+      model: "BaseUser", 
+      select: "firstName lastName", 
+    })
+      .populate({
+        path: "ressources",
+        model: "BaseRessource", 
+        select: "-__v -createdAt -updatedAt",
+      })
+      
+      .exec();
+
+      console.log(posts)
+      res.status(200).json(posts); 
+    
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+}
+
 async function acceptPost(req, res) {
   try {
     const postId = req.params.id;
@@ -124,7 +150,7 @@ async function deletePost(req, res) {
   const postId = req.params.id;
 
   try {
-    const result = await handleDeletePost(postId); // Correct function name
+    const result = await handleDeletePost(postId); 
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "Failed to delete post", details: err.message });
@@ -132,4 +158,4 @@ async function deletePost(req, res) {
 }
 
 
-module.exports = { createPost, getAllPosts, deletePost, editPost, acceptPost };
+module.exports = {getAllPostsUsers, createPost, getAllPosts, deletePost, editPost, acceptPost };

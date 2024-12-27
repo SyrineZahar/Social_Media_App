@@ -1,9 +1,10 @@
 const express = require("express");
-const { verifyToken } = require("../middlewares/auth");
+const { verifyToken, isAdmin } = require("../middlewares/auth");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
 const { login, logout } = require("../Controller/authController");
 const { createUser, getAllUsers,getUserById, updateUser, deleteUser } = require("../Controller/userController");
+const { protect } = require("../middlewares/auth");
 
 router.post("/login", login);
 
@@ -13,15 +14,15 @@ router.get("/profile", verifyToken, (req, res) => {
   res.json({ user: req.user });
 });
 
-router.post("/", (req, res) => createUser(req, res));
+router.post("/", createUser);
 
-router.get("/", (req, res) => getAllUsers(req, res));
+router.get("/",  protect, isAdmin, getAllUsers);
 
-router.get("/:id", (req, res) => getUserById(req, res));
+router.get("/:id",  protect, getUserById);
 
-router.put("/:id", (req, res) => updateUser(req, res));
+router.put("/:id",  protect,  updateUser);
 
 
-router.delete("/:id", (req, res) => deleteUser(req, res));
+router.delete("/:id", protect, deleteUser);
 
 module.exports = router;

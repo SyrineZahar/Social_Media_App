@@ -78,11 +78,12 @@
     }
   </style>
 </head>
-<body <body style="background: linear-gradient(to top right, purple, blue); display: flex; align-items: center; justify-content: center; min-height: 100vh;"></body>>
+<body <body style="background: linear-gradient(to top right, purple, blue); display: flex; align-items: center; justify-content: center; min-height: 100vh;">>
 
   <div class="login-container">
     <h2>Admin Login</h2>
 
+    <!-- Login Form -->
     <form action="/user/login" method="POST">
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
@@ -100,10 +101,12 @@
         </div>
       <% } %>
 
+      <!-- Submit Button -->
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
   </div>
 
+  <!-- Bootstrap Icons CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@ const {
 } = require("../Controller/commentController");
 
 router.post("/", protect, createComment);
-router.get("/:postId", getCommentsByPost);
+router.get("/:postId",protect, getCommentsByPost);
 router.put("/:commentId",protect, updateComment);
 router.delete("/:commentId",protect, deleteComment);
 
